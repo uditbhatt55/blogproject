@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}My Blog{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="{% static 'blogapp/css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <a href="{% url 'home' %}" class="nav-brand">My<span>Blog</span></a>
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu">☰</button>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'create_post' %}" class="btn-nav-primary">+ Write</a></li>
+        <li>
+          <form method="post" action="{% url 'logout' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="nav-links" style="background:none;border:none;padding:0.45rem 0.9rem;border-radius:6px;font-size:0.875rem;font-weight:500;color:var(--stone);cursor:pointer;font-family:'DM Sans',sans-serif;transition:color 0.25s ease,background 0.25s ease;" onmouseover="this.style.color='var(--charcoal)';this.style.background='var(--border)';" onmouseout="this.style.color='var(--stone)';this.style.background='none';">Logout</button>
+          </form>
+        </li>
+      {% else %}
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'signup' %}" class="btn-nav-primary">Sign Up</a></li>
+      {% endif %}
+      <li>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+{% if messages %}
+<div class="messages-wrap">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="page-wrapper">
+  {% block content %}{% endblock %}
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-brand">My<span>Blog</span></div>
+        <p class="footer-desc">A space for stories, ideas, and perspectives worth sharing.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navigate</h4>
+        <ul>
+          <li><a href="{% url 'home' %}">Home</a></li>
+          {% if user.is_authenticated %}
+            <li><a href="{% url 'create_post' %}">Write a Post</a></li>
+          {% else %}
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'signup' %}">Sign Up</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; {% now "Y" %} MyBlog &mdash; Built with Django
+    </div>
+  </div>
+</footer>
+
+<script src="{% static 'blogapp/js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,77 @@
+{% extends 'blogapp/base.html' %}
+{% block title %}Home — MyBlog{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Latest Posts</h1>
+  <p>Stories, ideas, and perspectives from our community.</p>
+</div>
+
+<div class="main-container">
+
+  <div class="search-wrap">
+    <span class="search-icon">&#128269;</span>
+    <input type="text" id="post-search" placeholder="Search posts…" autocomplete="off">
+  </div>
+
+  {% if posts %}
+    <div class="posts-grid" id="posts-grid">
+      {% for post in posts %}
+      <div class="post-card-wrap">
+        <article class="post-card">
+          <div class="card-img-wrap">
+            {% if post.image %}
+              <img src="{{ post.image.url }}" alt="{{ post.title }}">
+            {% else %}
+              <div class="card-img-placeholder">✍️</div>
+            {% endif %}
+          </div>
+          <div class="card-body">
+            <div class="card-meta">
+              <span>{{ post.author.username }}</span>
+              <span class="card-meta-dot"></span>
+              <span>{{ post.created_at|date:"M j, Y" }}</span>
+            </div>
+            <h2 class="card-title">{{ post.title }}</h2>
+            <p class="card-excerpt">{{ post.content|truncatewords:25 }}</p>
+          </div>
+          <div class="card-footer">
+            <a href="{% url 'post_detail' post.id %}" class="btn-read-more">
+              Read More
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% if posts.has_other_pages %}
+    <div class="pagination-wrap">
+      {% if posts.has_previous %}
+        <a href="?page={{ posts.previous_page_number }}" class="page-btn">&#8249;</a>
+      {% endif %}
+      {% for num in posts.paginator.page_range %}
+        <a href="?page={{ num }}" class="page-btn {% if posts.number == num %}active{% endif %}">{{ num }}</a>
+      {% endfor %}
+      {% if posts.has_next %}
+        <a href="?page={{ posts.next_page_number }}" class="page-btn">&#8250;</a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+  {% else %}
+    <div class="no-posts">
+      <div class="no-posts-icon">📝</div>
+      <h3>No posts yet</h3>
+      <p>Be the first to share something.</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'create_post' %}" class="btn-read-more" style="display:inline-flex;margin-top:1.25rem;">Write the first post</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="btn-read-more" style="display:inline-flex;margin-top:1.25rem;">Login to write</a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}
